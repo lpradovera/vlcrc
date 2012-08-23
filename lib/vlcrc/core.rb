@@ -11,9 +11,10 @@ module VLCRC
   class VLC
 
     # Attempt to connect to the given TCP socket, return new VLC object.
-    def initialize( host='localhost', port=1234 )
+    def initialize( host='localhost', port=1234, vlc_path='vlc')
       @host = 'localhost'
       @port = port
+      @vlc_path = vlc_path
       connect
     end
 
@@ -36,9 +37,9 @@ module VLCRC
     def launch
       return false if connected?
       if RUBY_PLATFORM =~ /(win|w)(32|64)$/
-        %x{ start vlc --lua-config "rc={host='#{@host}:#{@port}',flatplaylist=0}" >nul 2>&1 }
+        %x{ start #{@vlc_path} --lua-config "rc={host='#{@host}:#{@port}',flatplaylist=0}" >nul 2>&1 }
       else
-        %x{ vlc --lua-config "rc={host='#{@host}:#{@port}',flatplaylist=0}" >/dev/null 2>&1 & }
+        %x{ #{@vlc_path} --lua-config "rc={host='#{@host}:#{@port}',flatplaylist=0}" >/dev/null 2>&1 & }
       end
       # TODO pre-lua rc interface (VLC version detection?)
       true
