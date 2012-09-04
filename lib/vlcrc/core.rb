@@ -37,9 +37,10 @@ module VLCRC
     def launch
       return false if connected?
       if RUBY_PLATFORM =~ /(win|w)(32|64)$/
-        %x{ start #{@vlc_path} --lua-config "rc={host='#{@host}:#{@port}',flatplaylist=0}" >nul 2>&1 }
+        %x{ start #{@vlc_path} --lua-config "rc={host='#{@host}:#{@port}',flatplaylist=0}" >null 2>&1 }
       else
-        %x{ #{@vlc_path} --lua-config "rc={host='#{@host}:#{@port}',flatplaylist=0}" >/dev/null 2>&1 & }
+        %x{ #{@vlc_path} --extraintf rc --rc-host localhost:1234 >/dev/null 2>&1 & }
+        #%x{ #{@vlc_path} --lua-config "rc={host='#{@host}:#{@port}',flatplaylist=0}" >/dev/null 2>&1 & }
       end
       # TODO pre-lua rc interface (VLC version detection?)
       true
@@ -68,6 +69,11 @@ module VLCRC
     end
 
     # Toggle pause.
+    #
+    def faster()
+      ask "faster", false
+    end
+
     def pause() ask "pause", false end
 
     # Set current playing state.
@@ -152,8 +158,6 @@ module VLCRC
         ask "enqueue file://#{file}", false
       end
     end
-
-    private
 
     # Empty out the socket of any waiting messages and return them.
     def clear
